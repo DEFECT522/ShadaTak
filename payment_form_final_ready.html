@@ -1,0 +1,152 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>بيانات الدفع</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+      text-align: right;
+    }
+    .container {
+      max-width: 400px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #007bff;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    label {
+      font-weight: bold;
+    }
+    input[type="text"], input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    .image-preview {
+      width: 100%;
+      max-height: 200px;
+      object-fit: contain;
+      margin-bottom: 15px;
+      display: none;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    button {
+      width: 100%;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 12px;
+      font-size: 18px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:disabled {
+      background-color: #999;
+      cursor: not-allowed;
+    }
+    .top-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .top-info .package {
+      font-weight: bold;
+      font-size: 18px;
+      color: #000;
+    }
+    .top-info .cash {
+      font-weight: bold;
+      font-size: 16px;
+      color: red;
+    }
+    .vodafone {
+      text-align: center;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>بيانات الدفع</h2>
+    <form action="send.php" method="POST" enctype="multipart/form-data" oninput="validateForm()">
+      <div class="top-info">
+        <div class="package" id="selected-package">الباقة: غير محددة</div>
+        <div class="cash">الكاش - 01070210399</div>
+      </div>
+
+      <label>رقم الهاتف:</label>
+      <input type="text" name="phone" id="phone" placeholder="اكتب رقمك هنا">
+
+      <label>ID اللاعب:</label>
+      <input type="text" name="player_id" id="player_id" placeholder="اكتب ID الخاص بك">
+
+      <label>اسم اللاعب داخل اللعبة:</label>
+      <input type="text" name="player_name" id="player_name" placeholder="اكتب اسمك في اللعبة">
+
+      <label>صورة:</label>
+      <input type="file" name="receipt" id="receipt" accept="image/*" onchange="previewImage()">
+      <img id="image-preview" class="image-preview" src="#" alt="صورة التحميل">
+
+      <input type="hidden" name="package" id="hidden-package" value="">
+
+      <button type="submit" id="submit-btn" disabled>إرسال الطلب</button>
+    </form>
+
+    <div class="vodafone">Vodafone Cash</div>
+  </div>
+
+  <script>
+    function getQueryParam(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+
+    const selectedPackage = getQueryParam("package");
+    if (selectedPackage) {
+      document.getElementById("selected-package").innerText = "الباقة: " + selectedPackage;
+      document.getElementById("hidden-package").value = selectedPackage;
+    }
+
+    function previewImage() {
+      const file = document.getElementById("receipt").files[0];
+      const preview = document.getElementById("image-preview");
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          preview.src = e.target.result;
+          preview.style.display = "block";
+        };
+        reader.readAsDataURL(file);
+      }
+      validateForm();
+    }
+
+    function validateForm() {
+      const phone = document.getElementById("phone").value.trim();
+      const playerId = document.getElementById("player_id").value.trim();
+      const playerName = document.getElementById("player_name").value.trim();
+      const receipt = document.getElementById("receipt").files.length > 0;
+      const btn = document.getElementById("submit-btn");
+
+      btn.disabled = !(phone && playerId && playerName && receipt);
+    }
+  </script>
+</body>
+</html>
